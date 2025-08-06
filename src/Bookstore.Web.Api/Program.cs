@@ -1,20 +1,20 @@
 using Bookstore.Application;
 using Bookstore.Infrastructure;
+using Bookstore.Web.Api;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddOpenApi();
-
 builder.Services
     .AddApplication()
-    .AddInfrastructure(builder.Configuration);
-
-builder.Services.AddControllers();
+    .AddInfrastructure(builder.Configuration)
+    .AddPresentation();
 
 var app = builder.Build();
+
+app.MapDefaultEndpoints();
 
 if (app.Environment.IsDevelopment())
 {
@@ -22,8 +22,12 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference();
 }
 
-app.MapControllers();
+app.UseExceptionHandler();
 
-app.MapDefaultEndpoints();
+app.UseAuthentication();
+
+app.UseAuthorization();
+
+app.MapControllers();
 
 app.Run();

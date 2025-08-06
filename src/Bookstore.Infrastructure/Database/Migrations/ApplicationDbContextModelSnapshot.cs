@@ -30,39 +30,110 @@ namespace Bookstore.Infrastructure.Database.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedByFullName")
+                        .IsRequired()
+                        .HasColumnType("varchar(256)")
+                        .HasColumnName("created_by_full_name");
+
+                    b.Property<Guid>("CreatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_user_id");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedByFullName")
+                        .HasColumnType("varchar(256)")
+                        .HasColumnName("deleted_by_full_name");
+
+                    b.Property<Guid?>("DeletedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by_user_id");
+
+                    b.Property<string>("ISBN")
+                        .IsRequired()
+                        .HasColumnType("varchar(13)")
+                        .HasColumnName("isbn");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_deleted");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric(18,2)")
                         .HasColumnName("price");
+
+                    b.Property<int>("StockQuantity")
+                        .HasColumnType("int")
+                        .HasColumnName("stock_quantity");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("varchar(256)")
                         .HasColumnName("title");
 
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedByFullName")
+                        .HasColumnType("varchar(256)")
+                        .HasColumnName("updated_by_full_name");
+
+                    b.Property<Guid?>("UpdatedByUserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by_user_id");
+
                     b.HasKey("Id")
                         .HasName("pk_books");
 
-                    b.ToTable("books", "public");
+                    b.HasIndex("ISBN")
+                        .IsUnique()
+                        .HasDatabaseName("ix_books_isbn");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("0b9b6ce9-9eb0-497b-90c7-2e5be345f139"),
-                            Price = 675m,
-                            Title = "Clean Architecture"
-                        },
-                        new
-                        {
-                            Id = new Guid("9e9a1fa2-9c28-4404-bcba-f81c6f70264b"),
-                            Price = 590m,
-                            Title = "Onion Architecture"
-                        },
-                        new
-                        {
-                            Id = new Guid("19d8fb37-087f-45a3-b261-683261249c3f"),
-                            Price = 450m,
-                            Title = "Vertical Slice Architecture"
-                        });
+                    b.ToTable("books", "public");
+                });
+
+            modelBuilder.Entity("Bookstore.Domain.Users.User", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(256)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("first_name");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("last_name");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("password_hash");
+
+                    b.HasKey("Id")
+                        .HasName("pk_users");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasDatabaseName("ix_users_email");
+
+                    b.ToTable("users", "public");
                 });
 #pragma warning restore 612, 618
         }

@@ -2,5 +2,7 @@
 
 public sealed record GetBooksQueryResponse(
     Guid Id,
+    string ISBN,
     string Title,
-    decimal Price);
+    decimal Price,
+    int StockQuantity);
