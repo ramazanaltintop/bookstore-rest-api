@@ -16,14 +16,19 @@ public sealed class CreateUserCommandHandler(
         {
             throw new InvalidOperationException("E-mail address already exists in the system");
         }
-
         var user = new User()
         {
             Id = Guid.CreateVersion7(),
-            FirstName = command.FirstName,
-            LastName = command.LastName,
             Email = command.Email,
-            PasswordHash = passwordHasher.Hash(command.Password)
+            PasswordHash = passwordHasher.Hash(command.Password),
+            UserDetail = new()
+            {
+                Id = Guid.CreateVersion7(),
+                FirstName = command.UserDetail.FirstName,
+                LastName = command.UserDetail.LastName,
+                Age = command.UserDetail.Age,
+                Phone = command.UserDetail.Phone
+            }
         };
 
         context.Users.Add(user);

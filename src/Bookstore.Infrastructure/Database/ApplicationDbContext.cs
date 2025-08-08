@@ -11,6 +11,7 @@ public sealed class ApplicationDbContext(
 {
     public DbSet<Book> Books => Set<Book>();
     public DbSet<User> Users => Set<User>();
+    public DbSet<UserDetail> UserDetails => Set<UserDetail>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

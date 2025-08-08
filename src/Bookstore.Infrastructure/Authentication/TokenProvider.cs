@@ -27,7 +27,7 @@ internal sealed class TokenProvider(IOptions<JwtOptions> jwtOptions)
             [
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(ClaimTypes.Name, user.FullName)
+                new Claim(ClaimTypes.Name, user.UserDetail.FullName)
             ]),
             Expires = expires,
             SigningCredentials = new SigningCredentials(key, algorithm),

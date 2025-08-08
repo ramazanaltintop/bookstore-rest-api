@@ -16,6 +16,7 @@ public sealed class LoginUserCommandHandler(
         CancellationToken cancellationToken)
     {
         var user = await context.Users
+            .Include("UserDetail")
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.Email == command.Email, cancellationToken)
                 ?? throw new KeyNotFoundException("Please check your login information.");
