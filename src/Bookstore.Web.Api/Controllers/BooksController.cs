@@ -7,6 +7,7 @@ using Bookstore.Application.Books.Update;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Ramazan.Mediator;
 
 namespace Bookstore.Web.Api.Controllers;
@@ -18,6 +19,7 @@ public sealed class BooksController(
 {
     [Authorize]
     [HttpGet]
+    [EnableRateLimiting("per-user")]
     public async Task<IActionResult> GetAllBooks(
         [FromQuery] GetBooksQuery query,
         CancellationToken cancellationToken)
@@ -26,7 +28,9 @@ public sealed class BooksController(
         return Ok(books);
     }
 
+    [Authorize]
     [HttpGet("{id:Guid}")]
+    [EnableRateLimiting("per-user")]
     public async Task<IActionResult> GetOneBook(
         [FromRoute(Name = "id")] Guid id,
         CancellationToken cancellationToken)

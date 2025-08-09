@@ -14,19 +14,18 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapDefaultEndpoints();
+app.UseExceptionHandler();
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseRateLimiter();
 
+app.MapDefaultEndpoints();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
-
-app.UseExceptionHandler();
-
-app.UseAuthentication();
-
-app.UseAuthorization();
 
 app.MapControllers();
 
