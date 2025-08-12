@@ -1,19 +1,26 @@
 ﻿using Bookstore.Application.Abstractions.Authentication;
 using Bookstore.Application.Abstractions.Data;
+using Bookstore.Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
-using Ramazan.Mediator;
 
 namespace Bookstore.Application.Users.Login;
 
-public sealed class LoginUserCommandHandler(
+public interface ILoginUserCommandHandler : IHandler
+{
+    Task<LoginUserCommandResponse> HandleAsync(
+        LoginUserCommand command,
+        CancellationToken cancellationToken = default);
+}
+
+internal sealed class LoginUserCommandHandler(
     IApplicationDbContext context,
     IPasswordHasher passwordHasher,
     ITokenProvider tokenProvider)
-    : ICommandHandler<LoginUserCommand, LoginUserCommandResponse>
+    : ILoginUserCommandHandler
 {
-    public async Task<LoginUserCommandResponse> Handle(
+    public async Task<LoginUserCommandResponse> HandleAsync(
         LoginUserCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         var user = await context.Users
             .Include("UserDetail")

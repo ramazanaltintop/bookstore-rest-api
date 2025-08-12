@@ -2,29 +2,27 @@
 using Bookstore.Application.Books.Delete;
 using Bookstore.Application.Books.Get;
 using Bookstore.Application.Books.GetById;
-using Bookstore.Application.Books.Patch;
 using Bookstore.Application.Books.Update;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
-using Ramazan.Mediator;
 
 namespace Bookstore.Web.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public sealed class BooksController(
-    ISender sender) : Controller
+public sealed class BooksController : Controller
 {
     [Authorize]
     [HttpGet]
     [EnableRateLimiting("per-user")]
     public async Task<IActionResult> GetAllBooks(
         [FromQuery] GetBooksQuery query,
+        [FromServices] IGetBooksQueryHandler handler,
         CancellationToken cancellationToken)
     {
-        var books = await sender.Send(query, cancellationToken);
+        var books = await handler.HandleAsync(query, cancellationToken);
         return Ok(books);
     }
 
@@ -33,10 +31,13 @@ public sealed class BooksController(
     [EnableRateLimiting("per-user")]
     public async Task<IActionResult> GetOneBook(
         [FromRoute(Name = "id")] Guid id,
+        [FromServices] IGetBookByIdQueryHandler handler,
+        [FromServices] IValidator<GetBookByIdQuery> validator,
         CancellationToken cancellationToken)
     {
         var query = new GetBookByIdQuery(id);
-        var result = await sender.Send(query, cancellationToken);
+        await validator.ValidateAndThrowAsync(query, cancellationToken);
+        var result = await handler.HandleAsync(query, cancellationToken);
         return Ok(result);
     }
 
@@ -44,9 +45,12 @@ public sealed class BooksController(
     [HttpPost]
     public async Task<IActionResult> CreateBook(
         [FromBody] CreateBookCommand command,
+        [FromServices] ICreateBookCommandHandler handler,
+        [FromServices] IValidator<CreateBookCommand> validator,
         CancellationToken cancellationToken)
     {
-        var book = await sender.Send(command, cancellationToken);
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
+        var book = await handler.HandleAsync(command, cancellationToken);
         return Created($"api/books/{book.Id}", book);
     }
 
@@ -55,10 +59,13 @@ public sealed class BooksController(
     public async Task<IActionResult> UpdateBook(
         [FromRoute(Name = "id")] Guid id,
         [FromBody] UpdateBookDto dto,
+        [FromServices] IUpdateBookCommandHandler handler,
+        [FromServices] IValidator<UpdateBookCommand> validator,
         CancellationToken cancellationToken)
     {
         var command = new UpdateBookCommand(id, dto.ISBN, dto.Title, dto.Price, dto.StockQuantity);
-        var book = await sender.Send(command, cancellationToken);
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
+        var book = await handler.HandleAsync(command, cancellationToken);
         return Ok(book);
     }
 
@@ -66,20 +73,13 @@ public sealed class BooksController(
     [Authorize]
     public async Task<IActionResult> DeleteBook(
         [FromRoute(Name = "id")] Guid id,
+        [FromServices] IDeleteBookCommandHandler handler,
+        [FromServices] IValidator<DeleteBookCommand> validator,
         CancellationToken cancellationToken)
     {
         var command = new DeleteBookCommand(id);
-        await sender.Send(command, cancellationToken);
+        await validator.ValidateAndThrowAsync(command, cancellationToken);
+        await handler.HandleAsync(command, cancellationToken);
         return Ok(new { Message = "The book has been successfully deleted" });
-    }
-
-    [HttpPatch("{id:Guid}")]
-    public async Task<IActionResult> PatchBook(
-        [FromRoute(Name = "id")] Guid id,
-        [FromBody] JsonPatchDocument<PatchBookDto> patchDocument,
-        CancellationToken cancellationToken)
-    {
-        await sender.Send(new PatchBookCommand(id, patchDocument), cancellationToken);
-        return Ok(new { Message = "The book has been successfully updated" });
     }
 }

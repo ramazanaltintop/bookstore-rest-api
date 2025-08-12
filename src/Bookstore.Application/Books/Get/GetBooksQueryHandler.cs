@@ -1,15 +1,22 @@
 ﻿using Bookstore.Application.Abstractions.Data;
+using Bookstore.Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
-using Ramazan.Mediator;
 
 namespace Bookstore.Application.Books.Get;
 
-public sealed class GetBooksQueryHandler(IApplicationDbContext context)
-    : IQueryHandler<GetBooksQuery, IEnumerable<GetBooksQueryResponse>>
+public interface IGetBooksQueryHandler : IHandler
 {
-    public async Task<IEnumerable<GetBooksQueryResponse>> Handle(
+    Task<IEnumerable<GetBooksQueryResponse>> HandleAsync(
         GetBooksQuery query,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default);
+}
+
+internal sealed class GetBooksQueryHandler(IApplicationDbContext context)
+    : IGetBooksQueryHandler
+{
+    public async Task<IEnumerable<GetBooksQueryResponse>> HandleAsync(
+        GetBooksQuery query,
+        CancellationToken cancellationToken = default)
     {
         return await context.Books
             .AsNoTracking()

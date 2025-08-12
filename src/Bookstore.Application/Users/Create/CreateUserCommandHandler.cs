@@ -1,21 +1,31 @@
 ﻿using Bookstore.Application.Abstractions.Authentication;
 using Bookstore.Application.Abstractions.Data;
+using Bookstore.Application.Abstractions.Messaging;
 using Bookstore.Domain.Users;
 using Microsoft.EntityFrameworkCore;
-using Ramazan.Mediator;
 
 namespace Bookstore.Application.Users.Create;
 
-public sealed class CreateUserCommandHandler(
-    IApplicationDbContext context,
-    IPasswordHasher passwordHasher) : ICommandHandler<CreateUserCommand>
+public interface ICreateUserCommandHandler : IHandler
 {
-    public async Task Handle(CreateUserCommand command, CancellationToken cancellationToken)
+    Task HandleAsync(
+        CreateUserCommand command,
+        CancellationToken cancellationToken = default);
+}
+
+internal sealed class CreateUserCommandHandler(
+    IApplicationDbContext context,
+    IPasswordHasher passwordHasher) : ICreateUserCommandHandler
+{
+    public async Task HandleAsync(
+        CreateUserCommand command,
+        CancellationToken cancellationToken = default)
     {
         if (await context.Users.AnyAsync(u => u.Email == command.Email, cancellationToken))
         {
             throw new InvalidOperationException("E-mail address already exists in the system");
         }
+
         var user = new User()
         {
             Id = Guid.CreateVersion7(),

@@ -22,8 +22,7 @@ public static class ServiceRegistrar
 
         services.AddOpenApi();
 
-        services.AddControllers()
-            .AddNewtonsoftJson();
+        services.AddControllers();
 
         services.AddCustomRateLimiter();
 

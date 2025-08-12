@@ -1,12 +1,11 @@
-﻿using Ramazan.Mediator;
-using static Bookstore.Application.Users.Create.CreateUserCommand;
+﻿using static Bookstore.Application.Users.Create.CreateUserCommand;
 
 namespace Bookstore.Application.Users.Create;
 
 public sealed record CreateUserCommand(
     string Email,
     string Password,
-    UserDetailDto UserDetail) : ICommand
+    UserDetailDto UserDetail)
 {
     public sealed record UserDetailDto(
         string FirstName,

@@ -1,6 +1,4 @@
-﻿using Ramazan.Mediator;
-
-namespace Bookstore.Application.Books.Delete;
+﻿namespace Bookstore.Application.Books.Delete;
 
 public sealed record DeleteBookCommand(
-    Guid Id) : ICommand;
+    Guid Id);

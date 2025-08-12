@@ -1,15 +1,22 @@
 ﻿using Bookstore.Application.Abstractions.Data;
+using Bookstore.Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
-using Ramazan.Mediator;
 
 namespace Bookstore.Application.Books.Delete;
 
-public sealed class DeleteBookCommandHandler(IApplicationDbContext context)
-    : ICommandHandler<DeleteBookCommand>
+public interface IDeleteBookCommandHandler : IHandler
 {
-    public async Task Handle(
+    Task HandleAsync(
         DeleteBookCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default);
+}
+
+internal sealed class DeleteBookCommandHandler(IApplicationDbContext context)
+    : IDeleteBookCommandHandler
+{
+    public async Task HandleAsync(
+        DeleteBookCommand command,
+        CancellationToken cancellationToken = default)
     {
         var book = await context.Books
             .SingleOrDefaultAsync(b => b.Id == command.Id, cancellationToken)

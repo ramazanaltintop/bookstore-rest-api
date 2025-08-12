@@ -1,13 +1,11 @@
-﻿using Ramazan.Mediator;
-
-namespace Bookstore.Application.Books.Update;
+﻿namespace Bookstore.Application.Books.Update;
 
 public sealed record UpdateBookCommand(
     Guid Id,
     string ISBN,
     string Title,
     decimal Price,
-    int StockQuantity) : ICommand<UpdateBookCommandResponse>;
+    int StockQuantity);
 
 public sealed record UpdateBookDto(
     string ISBN,

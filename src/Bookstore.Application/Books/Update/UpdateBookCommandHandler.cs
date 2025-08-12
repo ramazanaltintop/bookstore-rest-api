@@ -1,15 +1,22 @@
 ﻿using Bookstore.Application.Abstractions.Data;
+using Bookstore.Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
-using Ramazan.Mediator;
 
 namespace Bookstore.Application.Books.Update;
 
-public sealed class UpdateBookCommandHandler(IApplicationDbContext context)
-    : ICommandHandler<UpdateBookCommand, UpdateBookCommandResponse>
+public interface IUpdateBookCommandHandler : IHandler
 {
-    public async Task<UpdateBookCommandResponse> Handle(
+    Task<UpdateBookCommandResponse> HandleAsync(
         UpdateBookCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default);
+}
+
+internal sealed class UpdateBookCommandHandler(IApplicationDbContext context)
+    : IUpdateBookCommandHandler
+{
+    public async Task<UpdateBookCommandResponse> HandleAsync(
+        UpdateBookCommand command,
+        CancellationToken cancellationToken = default)
     {
         var book = await context.Books
             .SingleOrDefaultAsync(b => b.Id == command.Id, cancellationToken)

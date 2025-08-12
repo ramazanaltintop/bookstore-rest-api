@@ -1,15 +1,22 @@
 ﻿using Bookstore.Application.Abstractions.Data;
+using Bookstore.Application.Abstractions.Messaging;
 using Bookstore.Domain.Books;
-using Ramazan.Mediator;
 
 namespace Bookstore.Application.Books.Create;
 
-public sealed class CreateBookCommandHandler(IApplicationDbContext context)
-    : ICommandHandler<CreateBookCommand, CreateBookCommandResponse>
+public interface ICreateBookCommandHandler : IHandler
 {
-    public async Task<CreateBookCommandResponse> Handle(
+    Task<CreateBookCommandResponse> HandleAsync(
         CreateBookCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default);
+}
+
+internal sealed class CreateBookCommandHandler(IApplicationDbContext context)
+    : ICreateBookCommandHandler
+{
+    public async Task<CreateBookCommandResponse> HandleAsync(
+        CreateBookCommand command,
+        CancellationToken cancellationToken = default)
     {
         Book book = new()
         {

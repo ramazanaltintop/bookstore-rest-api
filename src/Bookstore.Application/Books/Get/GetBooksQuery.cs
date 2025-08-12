@@ -1,5 +1,3 @@
-﻿using Ramazan.Mediator;
+﻿namespace Bookstore.Application.Books.Get;
 
-namespace Bookstore.Application.Books.Get;
-
-public sealed record GetBooksQuery : IQuery<IEnumerable<GetBooksQueryResponse>>;
+public sealed record GetBooksQuery;
