@@ -1,6 +1,8 @@
 using Bookstore.Application;
 using Bookstore.Infrastructure;
+using Bookstore.Infrastructure.Database;
 using Bookstore.Web.Api;
+using Bookstore.Web.Api.Extensions;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +27,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
+    app.ApplyMigrations<ApplicationDbContext>();
 }
 
 app.MapControllers();
